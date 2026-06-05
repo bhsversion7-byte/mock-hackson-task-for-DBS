@@ -12,6 +12,7 @@ The updated version is no longer limited to the three mock companies. A DBS inte
 
 - `index.html` - interactive prototype demo
 - `pitch.html` - browser-based pitch deck
+- `CashFlow_Shield_DBS_Hackathon_Pitch.pptx` - PowerPoint deck for hackathon judges
 - `PROCESS.md` - complete hackathon process, team discussion, roles, timeline, and judging strategy
 - `JUDGE_REVIEW.md` - judge-style critique, scorecard, and corrections
 - `MODEL_NOTES.md` - model factors, public references, and guardrails

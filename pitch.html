@@ -9,99 +9,150 @@
   <body class="deck-body">
     <main class="deck">
       <section class="slide cover-slide">
-        <p class="eyebrow">DBS FinTech Mini Hackathon</p>
+        <p class="eyebrow">DBS FinTech Hackathon Pitch</p>
         <h1>CashFlow Shield</h1>
-        <p class="slide-subtitle">A judge-ready RM copilot that detects SME cash-flow stress, explains the cause, and routes the next action through responsible lending guardrails.</p>
+        <p class="slide-subtitle">An internal DBS workbench for relationship managers and credit inspectors to detect SME cash-flow stress early, explain the drivers, and act through responsible lending guardrails.</p>
       </section>
 
       <section class="slide">
-        <p class="eyebrow">Judge critique</p>
-        <h2>The first version was useful, but not yet winner-grade.</h2>
+        <p class="eyebrow">1. Problem</p>
+        <h2>SME cash stress is visible before default, but banks often respond too late.</h2>
         <div class="three-points">
           <div>
-            <strong>Too soft</strong>
-            <p>It had a good story, but weak quantified impact. Judges could ask: how does DBS measure success?</p>
+            <strong>Manual triage</strong>
+            <p>RMs manually inspect transactions, invoices, fixed costs, and client notes to understand liquidity stress.</p>
           </div>
           <div>
-            <strong>Too abstract</strong>
-            <p>The AI score appeared from nowhere. Judges need data signals, model logic, and confidence.</p>
+            <strong>Late intervention</strong>
+            <p>By the time an SME asks for help, payroll, suppliers, or receivables may already be under pressure.</p>
           </div>
           <div>
-            <strong>Too risky</strong>
-            <p>FinTech judges will worry about auto-lending, explainability, false positives, and suitability.</p>
+            <strong>Risk control</strong>
+            <p>Fast support still needs affordability, evidence, suitability, and policy approval.</p>
           </div>
         </div>
       </section>
 
       <section class="slide">
-        <p class="eyebrow">Problem</p>
-        <h2>SME liquidity issues are predictable, but intervention is often late.</h2>
+        <p class="eyebrow">2. User</p>
+        <h2>This is for DBS internal teams, not customer self-service.</h2>
         <div class="three-points">
           <div>
-            <strong>RM workload</strong>
-            <p>Relationship managers must manually inspect account activity, invoices, and fixed-cost timing.</p>
+            <strong>RM</strong>
+            <p>Uses the tool to identify watch-list clients, prepare outreach, and request evidence.</p>
           </div>
           <div>
-            <strong>Customer pain</strong>
-            <p>SME owners usually ask for help after payroll, supplier, or receivable pressure has already escalated.</p>
+            <strong>Credit inspector</strong>
+            <p>Validates risk drivers, checks policy readiness, and blocks unsuitable submissions.</p>
           </div>
           <div>
-            <strong>Bank risk</strong>
-            <p>Late support can increase default risk, reduce retention, and create unsuitable credit pressure.</p>
+            <strong>Portfolio lead</strong>
+            <p>Monitors pilot quality, false positives, overrides, and adoption across RM teams.</p>
           </div>
         </div>
       </section>
 
       <section class="slide">
-        <p class="eyebrow">Solution</p>
-        <h2>A human-reviewed workflow, not an automatic credit engine.</h2>
+        <p class="eyebrow">3. Solution</p>
+        <h2>CashFlow Shield turns client cash-flow data into a human-reviewed early-warning workflow.</h2>
         <ol class="flow-list">
-          <li>Read consented operating-account and invoice timing signals.</li>
-          <li>Score liquidity buffer, receivables concentration, fixed-cost pressure, volatility, coverage, data quality, and policy readiness.</li>
-          <li>Generate RM actions with policy gates and suitability checks.</li>
-          <li>Track pilot outcomes: review time, early outreach, and customer resolution.</li>
+          <li>Import client cash-flow CSV or use internal operating-account signals.</li>
+          <li>Stress expected receivables and forecast 30-day liquidity buffer.</li>
+          <li>Decompose risk into explainable factors for RM and inspector review.</li>
+          <li>Generate a draft action plan with policy gates and non-credit alternatives.</li>
         </ol>
       </section>
 
       <section class="slide">
-        <p class="eyebrow">Demo</p>
-        <h2>What the judges should see in the prototype</h2>
+        <p class="eyebrow">4. Demo Walkthrough</p>
+        <h2>How to present the prototype in 90 seconds</h2>
         <div class="demo-strip">
-          <span>Import CSV</span>
-          <span>Stress signal</span>
-          <span>Policy gate</span>
+          <span>Settings</span>
+          <span>Import Data</span>
+          <span>Overview</span>
+          <span>Risk Drivers</span>
         </div>
-        <p class="slide-subtitle">The strongest demo moment: load a fresh cash-flow CSV, move the receivable-delay slider, show the risk score and cash gap changing, then generate an RM action plan that blocks unsafe auto-approval.</p>
+        <p class="slide-subtitle">Start as an RM, upload the sample CSV, move the receivable-delay slider, show the risk factors changing, then generate an action plan that keeps credit approval blocked until evidence and affordability checks pass.</p>
       </section>
 
       <section class="slide">
-        <p class="eyebrow">Impact</p>
-        <h2>DBS value is measurable in a four-week pilot.</h2>
+        <p class="eyebrow">5. What We Built</p>
+        <h2>A working frontend prototype, not just slides.</h2>
+        <div class="three-points">
+          <div>
+            <strong>Frontend</strong>
+            <p>HTML, CSS, and JavaScript. Runs locally in the browser with no backend dependency.</p>
+          </div>
+          <div>
+            <strong>Data</strong>
+            <p>CSV upload/paste, local persistence, sample cash-flow file, and SingStat/MAS benchmark refresh fallback.</p>
+          </div>
+          <div>
+            <strong>Workflow</strong>
+            <p>Role settings, overview factors, cash forecast, deep risk drivers, action plan, evidence, and pilot plan.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">6. Model Logic</p>
+        <h2>The score is explainable because it is decomposed into seven review factors.</h2>
+        <div class="metric-row">
+          <div><strong>Buffer</strong><span>minimum forecast balance</span></div>
+          <div><strong>Receivables</strong><span>invoice delay and concentration</span></div>
+          <div><strong>Fixed costs</strong><span>payroll, rent, tax, suppliers</span></div>
+          <div><strong>Readiness</strong><span>data confidence and policy gate</span></div>
+        </div>
+        <p class="slide-subtitle">The model is inspired by cash-flow underwriting and early-warning credit monitoring: deposits, balances, withdrawals, volatility, negative balance events, coverage, and evidence quality.</p>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">7. Innovation</p>
+        <h2>The innovation is not auto-lending. It is explainable, proactive RM intervention.</h2>
+        <ul class="next-list">
+          <li>Moves DBS from reactive SME support to forward-looking liquidity monitoring.</li>
+          <li>Combines cash-flow stress testing, explainable drivers, and responsible lending controls in one workflow.</li>
+          <li>Uses public benchmarks as context while preserving internal policy authority.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">8. Risk Controls</p>
+        <h2>Banking realism is built into the product.</h2>
+        <div class="three-points">
+          <div>
+            <strong>No auto-approval</strong>
+            <p>The system generates a draft RM plan only. Credit submission can be blocked.</p>
+          </div>
+          <div>
+            <strong>Evidence-first</strong>
+            <p>High-risk cases require invoice evidence, affordability review, and borrower exposure checks.</p>
+          </div>
+          <div>
+            <strong>Auditability</strong>
+            <p>A production version would log factor scores, source data version, overrides, and final RM action.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">9. Impact</p>
+        <h2>We can validate value in a four-week DBS pilot.</h2>
         <div class="metric-row">
           <div><strong>50%</strong><span>target reduction in manual triage time</span></div>
-          <div><strong>70%</strong><span>usefulness threshold for high-risk alerts</span></div>
-          <div><strong>20 RMs</strong><span>initial pilot group</span></div>
+          <div><strong>70%</strong><span>high-risk alerts judged useful</span></div>
+          <div><strong>20 RMs</strong><span>initial pilot cohort</span></div>
           <div><strong>0</strong><span>auto-approved credit decisions</span></div>
         </div>
       </section>
 
       <section class="slide">
-        <p class="eyebrow">Market grounding</p>
-        <h2>The product uses public benchmarks as context, not as credit approval.</h2>
+        <p class="eyebrow">10. Why This Wins</p>
+        <h2>CashFlow Shield is narrow enough to demo, realistic enough for a bank, and valuable enough to pilot.</h2>
         <ul class="next-list">
-          <li>EnterpriseSG EFS-WCL terms anchor responsible working-capital constraints.</li>
-          <li>SingStat/MAS tables provide SME and business-loan market context.</li>
-          <li>Borrower-specific decisions still require DBS policy, affordability checks, and RM review.</li>
-        </ul>
-      </section>
-
-      <section class="slide">
-        <p class="eyebrow">Why this wins</p>
-        <h2>It balances innovation with banking realism.</h2>
-        <ul class="next-list">
-          <li>Innovation: proactive cash-flow intervention before SME stress becomes default risk.</li>
-          <li>Quality: narrow workflow, visible data signals, explainable risk drivers, and policy guardrails.</li>
-          <li>Desirability: helps SMEs get earlier support while making RM work faster and safer.</li>
+          <li>Clear problem: late SME liquidity intervention and manual RM triage.</li>
+          <li>Clear demo: upload data, stress cash flow, explain drivers, generate guarded actions.</li>
+          <li>Clear DBS fit: internal RM workflow, credit-inspector controls, and measurable pilot path.</li>
         </ul>
       </section>
     </main>
