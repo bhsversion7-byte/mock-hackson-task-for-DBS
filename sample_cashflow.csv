@@ -1,0 +1,10 @@
+date,type,category,amount,status,description
+2026-06-08,inflow,receivable,42000,expected,Invoice from hotel group
+2026-06-12,outflow,payroll,28000,due,Monthly payroll
+2026-06-15,outflow,supplier,19000,due,Coffee bean supplier
+2026-06-18,inflow,receivable,36000,expected,Catering receivable
+2026-06-21,outflow,rent,12000,due,Outlet rent
+2026-06-25,outflow,tax,9000,due,GST and statutory payment
+2026-06-28,inflow,card_sales,31000,expected,Projected card settlement
+2026-07-02,outflow,supplier,15000,due,Packaging supplier
+2026-07-05,inflow,receivable,24000,expected,Corporate event invoice

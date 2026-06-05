@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CashFlow Shield Pitch</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="deck-body">
+    <main class="deck">
+      <section class="slide cover-slide">
+        <p class="eyebrow">DBS FinTech Mini Hackathon</p>
+        <h1>CashFlow Shield</h1>
+        <p class="slide-subtitle">A judge-ready RM copilot that detects SME cash-flow stress, explains the cause, and routes the next action through responsible lending guardrails.</p>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Judge critique</p>
+        <h2>The first version was useful, but not yet winner-grade.</h2>
+        <div class="three-points">
+          <div>
+            <strong>Too soft</strong>
+            <p>It had a good story, but weak quantified impact. Judges could ask: how does DBS measure success?</p>
+          </div>
+          <div>
+            <strong>Too abstract</strong>
+            <p>The AI score appeared from nowhere. Judges need data signals, model logic, and confidence.</p>
+          </div>
+          <div>
+            <strong>Too risky</strong>
+            <p>FinTech judges will worry about auto-lending, explainability, false positives, and suitability.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Problem</p>
+        <h2>SME liquidity issues are predictable, but intervention is often late.</h2>
+        <div class="three-points">
+          <div>
+            <strong>RM workload</strong>
+            <p>Relationship managers must manually inspect account activity, invoices, and fixed-cost timing.</p>
+          </div>
+          <div>
+            <strong>Customer pain</strong>
+            <p>SME owners usually ask for help after payroll, supplier, or receivable pressure has already escalated.</p>
+          </div>
+          <div>
+            <strong>Bank risk</strong>
+            <p>Late support can increase default risk, reduce retention, and create unsuitable credit pressure.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Solution</p>
+        <h2>A human-reviewed workflow, not an automatic credit engine.</h2>
+        <ol class="flow-list">
+          <li>Read consented operating-account and invoice timing signals.</li>
+          <li>Score liquidity buffer, receivables concentration, fixed-cost pressure, volatility, coverage, data quality, and policy readiness.</li>
+          <li>Generate RM actions with policy gates and suitability checks.</li>
+          <li>Track pilot outcomes: review time, early outreach, and customer resolution.</li>
+        </ol>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Demo</p>
+        <h2>What the judges should see in the prototype</h2>
+        <div class="demo-strip">
+          <span>Import CSV</span>
+          <span>Stress signal</span>
+          <span>Policy gate</span>
+        </div>
+        <p class="slide-subtitle">The strongest demo moment: load a fresh cash-flow CSV, move the receivable-delay slider, show the risk score and cash gap changing, then generate an RM action plan that blocks unsafe auto-approval.</p>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Impact</p>
+        <h2>DBS value is measurable in a four-week pilot.</h2>
+        <div class="metric-row">
+          <div><strong>50%</strong><span>target reduction in manual triage time</span></div>
+          <div><strong>70%</strong><span>usefulness threshold for high-risk alerts</span></div>
+          <div><strong>20 RMs</strong><span>initial pilot group</span></div>
+          <div><strong>0</strong><span>auto-approved credit decisions</span></div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Market grounding</p>
+        <h2>The product uses public benchmarks as context, not as credit approval.</h2>
+        <ul class="next-list">
+          <li>EnterpriseSG EFS-WCL terms anchor responsible working-capital constraints.</li>
+          <li>SingStat/MAS tables provide SME and business-loan market context.</li>
+          <li>Borrower-specific decisions still require DBS policy, affordability checks, and RM review.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="eyebrow">Why this wins</p>
+        <h2>It balances innovation with banking realism.</h2>
+        <ul class="next-list">
+          <li>Innovation: proactive cash-flow intervention before SME stress becomes default risk.</li>
+          <li>Quality: narrow workflow, visible data signals, explainable risk drivers, and policy guardrails.</li>
+          <li>Desirability: helps SMEs get earlier support while making RM work faster and safer.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CashFlow Shield Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">CF</div>
+          <div>
+            <p class="eyebrow">DBS FinTech Hackathon</p>
+            <h1>CashFlow Shield</h1>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Prototype navigation">
+          <button class="nav-item user-entry" type="button" data-section="settings">
+            <i data-lucide="user-cog"></i>
+            <span>Settings</span>
+          </button>
+          <button class="nav-item active" type="button" data-section="overview">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Overview</span>
+          </button>
+          <button class="nav-item" type="button" data-section="cashflow">
+            <i data-lucide="bar-chart-3"></i>
+            <span>Cash Forecast</span>
+          </button>
+          <button class="nav-item" type="button" data-section="drivers">
+            <i data-lucide="activity"></i>
+            <span>Risk Drivers</span>
+          </button>
+          <button class="nav-item" type="button" data-section="actions">
+            <i data-lucide="clipboard-check"></i>
+            <span>Action Plan</span>
+          </button>
+          <button class="nav-item" type="button" data-section="evidence">
+            <i data-lucide="database"></i>
+            <span>Evidence</span>
+          </button>
+          <button class="nav-item" type="button" data-section="pilot">
+            <i data-lucide="line-chart"></i>
+            <span>Pilot Plan</span>
+          </button>
+          <button class="nav-item" type="button" data-section="import">
+            <i data-lucide="upload"></i>
+            <span>Import Data</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-note">
+          <p class="label">Judge-ready scope</p>
+          <p>Internal DBS RM and credit-inspector workflow with uploadable SME cash-flow data, policy gates, and pilot controls.</p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Relationship manager cockpit</p>
+            <h2>Spot SME cash stress before it becomes default risk</h2>
+            <p id="accountContext" class="topbar-copy">Tanjong Coffee Pte Ltd · Food and beverage · 3-year DBS relationship</p>
+          </div>
+          <div class="account-picker">
+            <label for="accountSelect">SME account</label>
+            <select id="accountSelect">
+              <option value="tanjong">Tanjong Coffee Pte Ltd</option>
+              <option value="bright">BrightGrid Engineering</option>
+              <option value="nori">Nori Table Group</option>
+            </select>
+          </div>
+        </header>
+
+        <section class="kpi-grid" aria-label="Account health summary">
+          <article class="metric-card">
+            <div class="metric-title">
+              <span>30-day risk</span>
+              <i data-lucide="shield-alert"></i>
+            </div>
+            <div class="risk-score-row">
+              <strong id="riskScore">68</strong>
+              <span id="riskLevel" class="status-pill amber">Watch</span>
+            </div>
+            <div class="meter" aria-hidden="true">
+              <span id="riskMeter"></span>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-title">
+              <span>Projected cash gap</span>
+              <i data-lucide="wallet"></i>
+            </div>
+            <strong id="cashGap">S$42k</strong>
+            <p id="gapCopy">Expected shortfall in week 3 if receivable delay persists.</p>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-title">
+              <span>Suggested facility</span>
+              <i data-lucide="banknote"></i>
+            </div>
+            <strong id="facility">S$58k</strong>
+            <p>Working-capital line, capped by invoice coverage and repayment capacity.</p>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-title">
+              <span>Model confidence</span>
+              <i data-lucide="badge-check"></i>
+            </div>
+            <strong id="confidenceMetric">82%</strong>
+            <p id="confidenceCopy">Based on transaction history, receivable pattern, and payroll timing.</p>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-title">
+              <span>RM priority</span>
+              <i data-lucide="phone-call"></i>
+            </div>
+            <strong id="priority">Call today</strong>
+            <p id="priorityCopy">Customer has payroll exposure and delayed receivables.</p>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-title">
+              <span>Estimated impact</span>
+              <i data-lucide="timer-reset"></i>
+            </div>
+            <strong id="timeSavedMetric">42 min</strong>
+            <p>Estimated RM review time saved per stressed SME account.</p>
+          </article>
+        </section>
+
+        <section id="settings" class="panel" aria-labelledby="settingsTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">User center</p>
+              <h3 id="settingsTitle">DBS internal workspace settings</h3>
+              <p class="section-copy">This demo is designed for DBS staff, primarily relationship managers and credit inspectors. Role settings control the review lens, permission framing, and workflow guidance.</p>
+            </div>
+          </div>
+
+          <div class="settings-layout">
+            <article class="profile-card">
+              <div class="avatar-block">
+                <div class="avatar-mark" id="avatarMark">ML</div>
+                <div>
+                  <p class="label">Signed in as</p>
+                  <h4 id="userName">Melissa Lim</h4>
+                  <span id="userTitle">SME Relationship Manager · DBS Business Banking</span>
+                </div>
+              </div>
+              <div class="form-grid">
+                <label>
+                  Demo role
+                  <select id="userRole">
+                    <option value="rm">Relationship Manager</option>
+                    <option value="inspector">Credit Inspector</option>
+                    <option value="portfolio">Portfolio Risk Lead</option>
+                  </select>
+                </label>
+                <label>
+                  Portfolio
+                  <select id="userPortfolio">
+                    <option>SME Banking · Singapore</option>
+                    <option>Emerging Enterprises</option>
+                    <option>Food & Beverage SME Desk</option>
+                    <option>Trade & Working Capital</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article class="profile-card">
+              <p class="label">Access and approval scope</p>
+              <div id="permissionList" class="decision-stack"></div>
+            </article>
+          </div>
+
+          <div class="settings-layout">
+            <article class="profile-card">
+              <p class="label">Data integration readiness</p>
+              <div id="integrationList" class="integration-list"></div>
+            </article>
+
+            <article class="profile-card">
+              <p class="label">Model governance</p>
+              <div id="governanceList" class="integration-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="overview" class="panel active" aria-labelledby="overviewTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Assessment overview</p>
+              <h3 id="overviewTitle">Risk summary across all evaluation factors</h3>
+              <p class="section-copy">This page is the client and inspector landing view. It shows the full risk profile before drilling into forecast, drivers, actions, and pilot controls.</p>
+            </div>
+            <div class="guided-step">
+              <strong id="nextBestStep">Next: review risk drivers</strong>
+              <span id="nextBestCopy">Understand the largest causes before proposing any facility.</span>
+            </div>
+          </div>
+
+          <div class="score-layout">
+            <article class="score-panel">
+              <p class="label">Overall assessment</p>
+              <div class="score-main">
+                <strong id="overviewRiskScore">68</strong>
+                <span id="overviewRiskPill" class="status-pill amber">Watch</span>
+              </div>
+              <p id="overviewNarrative">Liquidity stress is manageable but intervention is recommended before week 3.</p>
+              <div class="mini-meter-grid" id="miniFactorMeters"></div>
+            </article>
+
+            <article class="score-panel">
+              <p class="label">Inspector decision frame</p>
+              <div class="decision-stack" id="decisionFrame"></div>
+            </article>
+          </div>
+
+          <div class="factor-grid" id="factorGrid"></div>
+        </section>
+
+        <section id="cashflow" class="panel" aria-labelledby="cashflowTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Forecast analysis</p>
+              <h3 id="cashflowTitle">30-day cash-flow forecast</h3>
+              <p class="section-copy">Use the receivable-delay scenario to stress expected inflows and observe whether the SME breaches its liquidity buffer.</p>
+            </div>
+            <div class="scenario-control">
+              <label for="delayRange">Receivable delay</label>
+              <div class="range-row">
+                <input id="delayRange" type="range" min="0" max="30" step="5" value="15" />
+                <output id="delayOutput">15 days</output>
+              </div>
+            </div>
+          </div>
+
+          <div class="forecast-layout">
+            <div class="chart-panel">
+              <div class="bar-chart" id="barChart" aria-label="Four-week projected cash balance"></div>
+              <div class="chart-axis">
+                <span>Week 1</span>
+                <span>Week 2</span>
+                <span>Week 3</span>
+                <span>Week 4</span>
+              </div>
+            </div>
+            <div class="insight-panel">
+              <p class="label">AI explanation</p>
+              <h4 id="explanationTitle">Risk rises because expected receivables slip past payroll week.</h4>
+              <p id="explanationBody">The account remains solvent, but liquidity drops below the internal comfort threshold in week 3. Intervention is recommended before supplier payments are missed.</p>
+              <div class="judge-note">
+                <strong>What judges should notice</strong>
+                <span>The prototype does not claim automated credit approval. It converts risk signals into a human-reviewed RM workflow.</span>
+              </div>
+              <button id="generatePlan" class="primary-action" type="button">
+                <i data-lucide="sparkles"></i>
+                <span>Generate RM action plan</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section id="import" class="panel compact-workflow" aria-labelledby="importTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Client-ready workflow</p>
+              <h3 id="importTitle">Import SME cash-flow data</h3>
+              <p class="section-copy">Upload a client's cash-flow extract to create or refresh the internal assessment. The page intentionally hides account summaries so the workflow stays focused on data intake.</p>
+            </div>
+            <button id="loadSampleData" class="secondary-action" type="button">
+              <i data-lucide="file-down"></i>
+              <span>Load sample CSV</span>
+            </button>
+          </div>
+
+          <div class="import-grid">
+            <article class="import-card">
+              <p class="label">SME profile</p>
+              <div class="form-grid">
+                <label>
+                  Account name
+                  <input id="customAccountName" type="text" value="Uploaded SME Client" />
+                </label>
+                <label>
+                  Industry
+                  <select id="customIndustry">
+                    <option>Food and beverage</option>
+                    <option>Engineering services</option>
+                    <option>Retail trade</option>
+                    <option>Wholesale trade</option>
+                    <option>Professional services</option>
+                    <option>Logistics</option>
+                  </select>
+                </label>
+                <label>
+                  Starting cash balance, S$
+                  <input id="startingCash" type="number" value="85000" min="0" step="1000" />
+                </label>
+              </div>
+              <div class="schema-note">
+                <strong>CSV schema</strong>
+                <span>date, type, category, amount, status, description. Use type as inflow/outflow. Use status as expected/received/due/paid.</span>
+              </div>
+            </article>
+
+            <article class="import-card">
+              <p class="label">Upload or paste CSV</p>
+              <input id="csvFile" class="file-input" type="file" accept=".csv,text/csv" />
+              <textarea id="csvText" spellcheck="false" aria-label="CSV input"></textarea>
+              <div class="button-row">
+                <button id="evaluateCsv" class="primary-action" type="button">
+                  <i data-lucide="calculator"></i>
+                  <span>Evaluate uploaded data</span>
+                </button>
+                <button id="clearCsv" class="secondary-action" type="button">
+                  <i data-lucide="x"></i>
+                  <span>Clear</span>
+                </button>
+              </div>
+              <p id="importState" class="copy-state" aria-live="polite"></p>
+            </article>
+          </div>
+
+          <div class="validation-table">
+            <div class="table-row table-head">
+              <span>What gets calculated</span>
+              <span>How the prototype uses it</span>
+              <span>Why it matters</span>
+            </div>
+            <div class="table-row">
+              <span>30-day projected balance</span>
+              <span>Expected inflows are delayed by the scenario slider; outflows land on due dates.</span>
+              <span>Shows whether the SME will breach a liquidity buffer.</span>
+            </div>
+            <div class="table-row">
+              <span>Receivable concentration</span>
+              <span>Top expected inflow is compared with total expected inflows.</span>
+              <span>Highlights dependence on one late customer payment.</span>
+            </div>
+            <div class="table-row">
+              <span>Fixed-cost pressure</span>
+              <span>Payroll, rent, supplier, and tax categories are treated as high-priority outflows.</span>
+              <span>Separates urgent liquidity stress from normal working-capital movement.</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="drivers" class="panel" aria-labelledby="driversTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Deep-dive assessment</p>
+              <h3 id="driversTitle">Explainable risk drivers</h3>
+              <p class="section-copy">Each driver is written for two readers: the SME client who needs plain-language guidance, and the financial inspector who needs evidence, assumptions, and validation checks.</p>
+            </div>
+            <div class="segmented-control" role="group" aria-label="Risk driver reading mode">
+              <button class="segment-button active" type="button" data-driver-mode="client">Client view</button>
+              <button class="segment-button" type="button" data-driver-mode="inspector">Inspector view</button>
+            </div>
+          </div>
+
+          <div class="driver-list" id="driverList"></div>
+          <div class="methodology-panel">
+            <p class="label">Model method</p>
+            <div id="methodologyList" class="methodology-grid"></div>
+          </div>
+        </section>
+
+        <section id="actions" class="panel" aria-labelledby="actionsTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Operational response</p>
+              <h3 id="actionsTitle">Responsible next best action</h3>
+              <p class="section-copy">The action plan separates client support, evidence collection, credit-policy checks, and non-credit alternatives.</p>
+            </div>
+            <span id="planState" class="status-pill neutral">Waiting for scenario</span>
+          </div>
+
+          <div class="action-layout">
+            <div class="action-list" id="actionList"></div>
+            <div class="offer-panel">
+              <p class="label">Guardrailed offer</p>
+              <h4 id="offerTitle">Working-capital line: S$58k</h4>
+              <div id="policyDecision" class="decision-box">Decision gate: RM review required before credit submission.</div>
+              <ul>
+                <li>No auto-approval; RM review required.</li>
+                <li>Cap based on verified invoices and cash-cycle history.</li>
+                <li>Customer receives alternatives before new debt is proposed.</li>
+              </ul>
+              <button class="secondary-action" id="copySummary" type="button">
+                <i data-lucide="copy"></i>
+                <span>Copy RM summary</span>
+              </button>
+              <p id="copyState" class="copy-state" aria-live="polite"></p>
+            </div>
+          </div>
+          <div class="action-detail-grid" id="actionDetailGrid"></div>
+        </section>
+
+        <section id="evidence" class="panel" aria-labelledby="evidenceTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Judge fix 1</p>
+              <h3 id="evidenceTitle">Evidence, model logic, and guardrails</h3>
+            </div>
+          </div>
+
+          <div class="evidence-layout">
+            <article class="evidence-card">
+              <p class="label">Data signals</p>
+              <div id="dataSignals" class="evidence-list"></div>
+            </article>
+            <article class="evidence-card">
+              <p class="label">Scoring logic</p>
+              <div id="modelLogic" class="evidence-list"></div>
+            </article>
+            <article class="evidence-card">
+              <p class="label">Responsible AI guardrails</p>
+              <div class="evidence-list">
+                <div><strong>Human in control</strong><span>RM approves every action before customer contact or credit submission.</span></div>
+                <div><strong>Explainable output</strong><span>Every risk score has ranked drivers and source signals.</span></div>
+                <div><strong>No sensitive inference</strong><span>The mock model avoids protected personal attributes and uses operational account signals.</span></div>
+              </div>
+            </article>
+            <article class="evidence-card market-card">
+              <div class="card-title-row">
+                <p class="label">Market benchmark</p>
+                <button id="refreshMarketData" class="icon-action" type="button" aria-label="Refresh public market data">
+                  <i data-lucide="refresh-cw"></i>
+                </button>
+              </div>
+              <div id="marketBenchmarks" class="evidence-list"></div>
+              <p id="marketState" class="source-note">Official data fallback loaded.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="pilot" class="panel" aria-labelledby="pilotTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Judge fix 2</p>
+              <h3 id="pilotTitle">Pilot plan and success metrics</h3>
+              <p class="section-copy">The pilot is designed to test whether the tool improves RM judgment without creating unsuitable credit pressure.</p>
+            </div>
+          </div>
+
+          <div class="pilot-grid">
+            <article class="pilot-card">
+              <strong>4 weeks</strong>
+              <span>pilot with 20 SME relationship managers</span>
+            </article>
+            <article class="pilot-card">
+              <strong>3 metrics</strong>
+              <span>early outreach rate, review time, customer outcome</span>
+            </article>
+            <article class="pilot-card">
+              <strong>2 controls</strong>
+              <span>policy override tracking and false-positive review</span>
+            </article>
+          </div>
+
+          <div class="validation-table">
+            <div class="table-row table-head">
+              <span>Risk</span>
+              <span>How we test it</span>
+              <span>Pass condition</span>
+            </div>
+            <div class="table-row">
+              <span>False positives</span>
+              <span>Compare model alerts with RM assessment.</span>
+              <span>At least 70% of high-risk alerts judged useful.</span>
+            </div>
+            <div class="table-row">
+              <span>Credit harm</span>
+              <span>Track whether facility suggestions create unsuitable debt.</span>
+              <span>All offers pass policy and affordability checks.</span>
+            </div>
+            <div class="table-row">
+              <span>Adoption</span>
+              <span>Measure whether RMs act on recommendations.</span>
+              <span>50% reduction in manual triage time for reviewed accounts.</span>
+            </div>
+          </div>
+          <div class="pilot-timeline" id="pilotTimeline"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
