@@ -11,6 +11,18 @@ const accounts = {
     baseGap: 24,
     facilityBase: 44,
     balances: [84, 62, 18, 36],
+    assetProfile: {
+      cash: 86000,
+      receivables: 96000,
+      inventory: 42000,
+      otherCurrentAssets: 18000,
+      currentLiabilities: 154000,
+      monthlySales: 186000,
+      dio: 18,
+      dso: 34,
+      dpo: 23,
+      tangibleAssetCoverage: 1.18
+    },
     drivers: [
       ["Receivables delay", "Two major invoices moved beyond the normal 21-day collection cycle.", "+18"],
       ["Payroll exposure", "Payroll week overlaps with a supplier payment cluster.", "+13"],
@@ -29,6 +41,18 @@ const accounts = {
     baseGap: 12,
     facilityBase: 28,
     balances: [110, 92, 64, 58],
+    assetProfile: {
+      cash: 118000,
+      receivables: 146000,
+      inventory: 22000,
+      otherCurrentAssets: 36000,
+      currentLiabilities: 168000,
+      monthlySales: 342000,
+      dio: 9,
+      dso: 29,
+      dpo: 34,
+      tangibleAssetCoverage: 1.46
+    },
     drivers: [
       ["Project milestone delay", "One project payment is expected later than the original schedule.", "+9"],
       ["Concentrated buyer risk", "Top customer represents 46% of incoming cash this month.", "+7"],
@@ -47,6 +71,18 @@ const accounts = {
     baseGap: 55,
     facilityBase: 76,
     balances: [44, 20, -28, -12],
+    assetProfile: {
+      cash: 52000,
+      receivables: 132000,
+      inventory: 76000,
+      otherCurrentAssets: 12000,
+      currentLiabilities: 224000,
+      monthlySales: 214000,
+      dio: 28,
+      dso: 45,
+      dpo: 20,
+      tangibleAssetCoverage: 0.86
+    },
     drivers: [
       ["Seasonal demand dip", "Card revenue is 17% below the prior comparable period.", "+16"],
       ["Rent and payroll stack", "Two fixed-cost obligations land within four business days.", "+14"],
@@ -139,6 +175,12 @@ const nextBestCopy = document.querySelector("#nextBestCopy");
 const methodologyList = document.querySelector("#methodologyList");
 const actionDetailGrid = document.querySelector("#actionDetailGrid");
 const pilotTimeline = document.querySelector("#pilotTimeline");
+const assetMetricGrid = document.querySelector("#assetMetricGrid");
+const assetDecisionTitle = document.querySelector("#assetDecisionTitle");
+const assetDecisionCopy = document.querySelector("#assetDecisionCopy");
+const assetLogicList = document.querySelector("#assetLogicList");
+const stressTable = document.querySelector("#stressTable");
+const researchAnchorList = document.querySelector("#researchAnchorList");
 const avatarMark = document.querySelector("#avatarMark");
 const userName = document.querySelector("#userName");
 const userTitle = document.querySelector("#userTitle");
@@ -202,6 +244,14 @@ function formatMarketValue(value, unit) {
     return `S$${value.toFixed(1)}m`;
   }
   return `${value.toLocaleString("en-SG")} ${unit}`;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function safeRatio(numerator, denominator) {
+  return denominator ? numerator / denominator : 0;
 }
 
 function parseCsvLine(line) {
@@ -275,6 +325,21 @@ function buildAccountFromTransactions(transactions) {
   const facilityBase = Math.min(500, Math.max(20, Math.round((invoicesAtRisk * 0.72) / 1000)));
   const confidence = Math.max(62, Math.min(91, Math.round(64 + Math.min(transactions.length, 12) * 2 + (expectedInflows.length ? 6 : 0))));
   const reviewMinutes = Math.round(45 + transactions.length * 1.8);
+  const supplierAndInventoryOutflows = futureOutflows
+    .filter((row) => ["inventory", "supplier", "stock", "materials"].includes(row.category))
+    .reduce((sum, row) => sum + row.amount, 0);
+  const assetProfile = {
+    cash: starting,
+    receivables: invoicesAtRisk,
+    inventory: Math.max(supplierAndInventoryOutflows * 0.55, totalOutflows * 0.12),
+    otherCurrentAssets: Math.max(5000, totalInflows * 0.04),
+    currentLiabilities: Math.max(futureOutflows.reduce((sum, row) => sum + row.amount, 0), totalOutflows * 0.72),
+    monthlySales: Math.max(totalInflows, 1),
+    dio: Math.round(clamp(safeRatio(supplierAndInventoryOutflows, Math.max(1, totalOutflows)) * 42, 6, 38)),
+    dso: Math.round(clamp(safeRatio(invoicesAtRisk, Math.max(1, totalInflows)) * 55, 12, 62)),
+    dpo: Math.round(clamp(safeRatio(fixedOutflows, Math.max(1, totalOutflows)) * 36, 8, 45)),
+    tangibleAssetCoverage: clamp(safeRatio(starting + invoicesAtRisk * 0.75 + supplierAndInventoryOutflows * 0.35, Math.max(1, totalOutflows)), 0.45, 1.7)
+  };
 
   const customAccount = {
     name: customAccountName.value.trim() || "Uploaded SME Client",
@@ -287,6 +352,7 @@ function buildAccountFromTransactions(transactions) {
     baseRisk,
     baseGap,
     facilityBase,
+    assetProfile,
     startingCash: starting,
     transactions,
     drivers: [
@@ -369,17 +435,122 @@ function buildTransactionBalances(account, delayFactor) {
   return weekly.map((value) => Math.round(value / 1000));
 }
 
+function getAssetProfile(account) {
+  if (account.assetProfile) return account.assetProfile;
+
+  const cash = (account.startingCash ?? 80000);
+  const receivables = account.invoicesAtRisk * 1000;
+  const currentLiabilities = Math.max(account.facilityBase * 1700, account.monthlyInflow * 620);
+  const inventory = Math.max(account.monthlyInflow * 180, currentLiabilities * 0.18);
+  return {
+    cash,
+    receivables,
+    inventory,
+    otherCurrentAssets: account.monthlyInflow * 80,
+    currentLiabilities,
+    monthlySales: account.monthlyInflow * 1000,
+    dio: 18,
+    dso: 34,
+    dpo: 24,
+    tangibleAssetCoverage: safeRatio(cash + receivables * 0.75 + inventory * 0.35, currentLiabilities)
+  };
+}
+
+function deriveAssetMetrics(account, { delay, balances }) {
+  const profile = getAssetProfile(account);
+  const currentAssets = profile.cash + profile.receivables + profile.inventory + profile.otherCurrentAssets;
+  const quickAssets = profile.cash + profile.receivables * 0.85;
+  const currentLiabilities = profile.currentLiabilities;
+  const workingCapital = currentAssets - currentLiabilities;
+  const currentRatio = safeRatio(currentAssets, currentLiabilities);
+  const quickRatio = safeRatio(quickAssets, currentLiabilities);
+  const baseCashCycle = profile.dio + profile.dso - profile.dpo;
+  const stressedCashCycle = baseCashCycle + delay;
+  const workingCapitalTurnover = safeRatio(profile.monthlySales * 12, Math.max(1, Math.abs(workingCapital)));
+  const minForecastCash = Math.min(...balances) * 1000;
+  const stressedTangibleBuffer = minForecastCash + profile.receivables * 0.65 + profile.inventory * 0.35 - currentLiabilities;
+  const dailyLiabilityBurn = currentLiabilities / 30;
+  const cashRunwayDays = Math.round(safeRatio(Math.max(0, profile.cash + minForecastCash), Math.max(1, dailyLiabilityBurn)));
+
+  const ratioPenalty = currentRatio < 1.2 ? (1.2 - currentRatio) * 52 : 0;
+  const quickPenalty = quickRatio < 0.9 ? (0.9 - quickRatio) * 42 : 0;
+  const cyclePenalty = stressedCashCycle > 45 ? (stressedCashCycle - 45) * 0.65 : 0;
+  const bufferPenalty = stressedTangibleBuffer < 0 ? Math.min(28, Math.abs(stressedTangibleBuffer) / 6000) : 0;
+  const turnoverPenalty = workingCapitalTurnover < 6 ? (6 - workingCapitalTurnover) * 3.5 : 0;
+  const tangiblePenalty = profile.tangibleAssetCoverage < 1 ? (1 - profile.tangibleAssetCoverage) * 34 : 0;
+
+  return {
+    ...profile,
+    currentAssets,
+    quickAssets,
+    currentLiabilities,
+    workingCapital,
+    currentRatio,
+    quickRatio,
+    baseCashCycle,
+    stressedCashCycle,
+    workingCapitalTurnover,
+    stressedTangibleBuffer,
+    cashRunwayDays,
+    assetRiskScore: Math.round(clamp(24 + ratioPenalty + quickPenalty + bufferPenalty + turnoverPenalty + tangiblePenalty, 16, 94)),
+    cycleRiskScore: Math.round(clamp(22 + cyclePenalty + delay * 0.95 + (profile.dso > 40 ? 10 : 0), 14, 90))
+  };
+}
+
+function deriveScenarioModel(account, delay, delayFactor, balances) {
+  const preliminaryGap = Math.round(account.baseGap + delayFactor * 6);
+  const minBalance = Math.min(...balances);
+  const gap = Math.max(preliminaryGap, Math.max(0, Math.abs(minBalance)));
+  const facilityAmount = Math.round(account.facilityBase + delayFactor * 4);
+  const confidence = Math.max(61, Math.round(account.confidence - delayFactor * 1.5));
+  const savedMinutes = Math.max(25, Math.round(account.reviewMinutes - 16 - delayFactor));
+  const signals = getAccountSignals(account);
+  const assetMetrics = deriveAssetMetrics(account, { delay, balances });
+  const negativeWeeks = balances.filter((value) => value < 0).length;
+
+  const liquidityScore = clamp(34 + Math.abs(Math.min(0, minBalance)) * 1.22 + gap * 0.62 + negativeWeeks * 10, 18, 96);
+  const receivableScore = clamp(signals.invoicesRatio * 68 + delay * 0.75 + (assetMetrics.dso > 40 ? 10 : 0), 22, 94);
+  const fixedCostScore = clamp(account.baseRisk * 0.38 + gap * 0.4 + safeRatio(assetMetrics.currentLiabilities, assetMetrics.currentAssets) * 24, 20, 92);
+  const volatilityScore = clamp(signals.volatility * 0.72 + negativeWeeks * 13 + delayFactor * 2, 18, 90);
+  const coverageScore = clamp(facilityAmount / Math.max(1, account.monthlyInflow) * 74 + (assetMetrics.quickRatio < 1 ? 11 : 0), 18, 90);
+  const dataQualityScore = clamp(100 - confidence + (account.transactions ? 0 : 8), 12, 54);
+  const policyScore = gap > 65 || liquidityScore >= 78 ? 86 : gap > 35 ? 64 : 34;
+
+  const factorScores = {
+    liquidity: Math.round(liquidityScore),
+    receivables: Math.round(receivableScore),
+    fixed_costs: Math.round(fixedCostScore),
+    volatility: Math.round(volatilityScore),
+    coverage: Math.round(coverageScore),
+    asset_quality: assetMetrics.assetRiskScore,
+    cash_cycle: assetMetrics.cycleRiskScore,
+    data_quality: Math.round(dataQualityScore),
+    policy: Math.round(policyScore)
+  };
+
+  const weightedRisk =
+    factorScores.liquidity * 0.22 +
+    factorScores.receivables * 0.14 +
+    factorScores.fixed_costs * 0.12 +
+    factorScores.volatility * 0.09 +
+    factorScores.coverage * 0.1 +
+    factorScores.asset_quality * 0.13 +
+    factorScores.cash_cycle * 0.1 +
+    factorScores.data_quality * 0.04 +
+    factorScores.policy * 0.06;
+  const priorRisk = account.baseRisk + delayFactor * 4;
+  const risk = Math.round(clamp(weightedRisk * 0.78 + priorRisk * 0.22, 16, 96));
+
+  return { risk, gap, facilityAmount, confidence, savedMinutes, factorScores, assetMetrics };
+}
+
 function getComputedScenario() {
   const account = accounts[accountSelect.value];
   const delay = Number(delayRange.value);
   const delayFactor = delay / 5;
-  const risk = Math.min(96, Math.round(account.baseRisk + delayFactor * 4));
-  const gap = Math.round(account.baseGap + delayFactor * 6);
-  const facilityAmount = Math.round(account.facilityBase + delayFactor * 4);
-  const confidence = Math.max(61, Math.round(account.confidence - delayFactor * 1.5));
-  const savedMinutes = Math.max(25, Math.round(account.reviewMinutes - 16 - delayFactor));
   const balances = buildTransactionBalances(account, delayFactor);
-  return { account, delay, risk, gap, facilityAmount, confidence, savedMinutes, balances };
+  const model = deriveScenarioModel(account, delay, delayFactor, balances);
+  return { account, delay, balances, ...model };
 }
 
 function riskMeta(risk) {
@@ -408,23 +579,17 @@ function getAccountSignals(account) {
 }
 
 function deriveFactors(scenario) {
-  const { account, balances, risk, confidence, facilityAmount } = scenario;
+  const { account, risk, confidence, facilityAmount } = scenario;
   const signals = getAccountSignals(account);
-  const minStressBalance = Math.min(...balances);
-  const negativeWeeks = balances.filter((value) => value < 0).length;
-  const liquidityScore = Math.min(95, Math.max(18, 42 + Math.abs(Math.min(0, minStressBalance)) * 1.2 + scenario.gap * 0.55));
-  const volatilityScore = Math.min(90, Math.max(20, signals.volatility * 0.7 + negativeWeeks * 12));
-  const receivableScore = Math.min(92, Math.max(22, signals.invoicesRatio * 66 + scenario.delay * 0.7));
-  const fixedCostScore = Math.min(90, Math.max(20, account.baseRisk * 0.45 + scenario.gap * 0.35));
-  const dscrScore = Math.min(88, Math.max(18, facilityAmount / Math.max(1, account.monthlyInflow) * 72));
-  const confidenceScore = Math.max(12, 100 - confidence);
-  const policyScore = risk >= 75 ? 84 : risk >= 55 ? 62 : 34;
+  const scores = scenario.factorScores;
+  const assetMetrics = scenario.assetMetrics;
+  const minStressBalance = Math.min(...scenario.balances);
 
   return [
     {
       key: "liquidity",
       title: "Liquidity buffer",
-      score: Math.round(liquidityScore),
+      score: scores.liquidity,
       value: `${formatMoney(minStressBalance)} lowest forecast balance`,
       client: "Shows whether the business has enough cash cushion after expected inflows are delayed.",
       inspector: "Inspect minimum projected balance, negative-balance weeks, and whether the buffer breach is temporary or structural."
@@ -432,7 +597,7 @@ function deriveFactors(scenario) {
     {
       key: "receivables",
       title: "Receivables concentration",
-      score: Math.round(receivableScore),
+      score: scores.receivables,
       value: `${Math.round(signals.invoicesRatio * 100)}% of monthly inflow at risk`,
       client: "Highlights dependence on delayed customer payments.",
       inspector: "Validate invoice evidence, debtor concentration, aging, dispute status, and collection history."
@@ -440,7 +605,7 @@ function deriveFactors(scenario) {
     {
       key: "fixed_costs",
       title: "Fixed-cost pressure",
-      score: Math.round(fixedCostScore),
+      score: scores.fixed_costs,
       value: "Payroll, rent, tax, supplier timing",
       client: "Separates urgent obligations from discretionary spending.",
       inspector: "Check whether payroll, statutory payments, rent, and core suppliers create non-deferrable cash needs."
@@ -448,7 +613,7 @@ function deriveFactors(scenario) {
     {
       key: "volatility",
       title: "Balance volatility",
-      score: Math.round(volatilityScore),
+      score: scores.volatility,
       value: `${formatMoney(Math.round(signals.volatility))} weekly variation`,
       client: "Measures whether cash moves predictably or swings sharply week to week.",
       inspector: "Review deposit regularity, withdrawal spikes, low-balance incidents, and seasonality."
@@ -456,15 +621,31 @@ function deriveFactors(scenario) {
     {
       key: "coverage",
       title: "Repayment coverage proxy",
-      score: Math.round(dscrScore),
+      score: scores.coverage,
       value: `${Math.round(signals.facilityRatio * 100)}% facility-to-inflow ratio`,
       client: "Tests whether the requested facility size is proportionate to normal inflows.",
       inspector: "Use this as a DSCR-style pre-screen only; final DSCR requires verified financial statements and existing debt obligations."
     },
     {
+      key: "asset_quality",
+      title: "Asset quality",
+      score: scores.asset_quality,
+      value: `${assetMetrics.currentRatio.toFixed(2)}x current ratio`,
+      client: "Checks whether current assets can realistically support near-term obligations.",
+      inspector: "Haircut receivables and inventory before relying on asset coverage; stale or disputed receivables should not count as cash."
+    },
+    {
+      key: "cash_cycle",
+      title: "Cash conversion cycle",
+      score: scores.cash_cycle,
+      value: `${assetMetrics.stressedCashCycle} stressed days`,
+      client: "Shows how long cash stays tied up in inventory and receivables after supplier timing is considered.",
+      inspector: "Review DIO, DSO, DPO, delayed receivables, and whether growth is consuming working capital faster than cash is collected."
+    },
+    {
       key: "data_quality",
       title: "Data confidence",
-      score: Math.round(confidenceScore),
+      score: scores.data_quality,
       value: `${confidence}% signal confidence`,
       client: "Better data lowers uncertainty; missing invoices or unclear categories raise review friction.",
       inspector: "Assess completeness of bank statements, invoice metadata, uploaded rows, and category mapping."
@@ -472,7 +653,7 @@ function deriveFactors(scenario) {
     {
       key: "policy",
       title: "Policy readiness",
-      score: Math.round(policyScore),
+      score: scores.policy,
       value: risk >= 75 ? "Credit submission blocked" : "RM review required",
       client: "Shows whether the case is ready for financing review or needs more evidence first.",
       inspector: "Confirm EFS/working-capital eligibility, affordability, suitability, borrower group exposure, and human approval."
@@ -589,6 +770,8 @@ function getEvidenceText(key) {
     fixed_costs: "Payroll schedule, rent agreement, tax dates, supplier terms, leases, and deferrability of each outflow.",
     volatility: "Deposit regularity, withdrawal spikes, low or negative balance incidents, and month-to-month seasonality.",
     coverage: "Existing debt service, operating cash flow, facility amount, expected repayment source, and DSCR calculation.",
+    asset_quality: "Current assets, receivables aging, inventory quality, cash balance, current liabilities, and tangible asset haircuts.",
+    cash_cycle: "DIO, DSO, DPO, invoice aging, supplier terms, inventory turnover, and delayed receivable assumptions.",
     data_quality: "CSV completeness, bank statement coverage, uncategorized rows, missing invoice references, and stale data.",
     policy: "Eligibility, borrower group exposure, affordability, suitability, collateral or guarantee status, and approval authority."
   };
@@ -602,6 +785,8 @@ function getMitigationText(key) {
     fixed_costs: "Prioritize payroll/statutory payments; negotiate supplier timing before recommending financing.",
     volatility: "Use a smaller facility, tighter review cadence, or require updated statements before credit submission.",
     coverage: "Reduce requested amount, shorten tenor, match repayment timing to collections, or decline unsuitable debt.",
+    asset_quality: "Apply haircuts to weak assets, request aged receivables, and avoid counting slow inventory as immediate liquidity.",
+    cash_cycle: "Shorten collection terms, confirm debtor payment dates, defer non-critical purchases, or match tenor to the cycle.",
     data_quality: "Ask for missing invoices, bank statements, and category corrections before escalating to credit.",
     policy: "Keep RM review in control; block auto-approval when evidence or affordability is incomplete."
   };
@@ -612,26 +797,88 @@ function renderMethodology(scenario) {
   const factors = deriveFactors(scenario);
   methodologyList.innerHTML = [
     ["Cash-flow underwriting", "Primary assessment uses projected inflows/outflows, stress testing, and account-level cash behavior."],
+    ["Asset-quality lens", "Current assets are measured with receivable and inventory haircuts before they are treated as usable liquidity."],
+    ["Cash conversion cycle", "DIO, DSO, and DPO explain whether growth is tying up cash inside working capital."],
     ["Early-warning logic", "The model prioritizes signals that can show deterioration before a past-due event appears."],
     ["Explainability", `Overall score ${scenario.risk}/100 is decomposed into ${factors.length} visible factor scores.`],
     ["Human control", "The output recommends RM actions; it does not approve credit or replace DBS policy."]
   ].map(([title, body]) => `<div><strong>${title}</strong><span>${body}</span></div>`).join("");
 }
 
+function renderAssetLens(scenario) {
+  const asset = scenario.assetMetrics;
+  const assetStatus = factorStatus(scenario.factorScores.asset_quality);
+  const cycleStatus = factorStatus(scenario.factorScores.cash_cycle);
+  const bufferStatus = asset.stressedTangibleBuffer < 0
+    ? { label: "Deficit", className: "red" }
+    : asset.stressedTangibleBuffer < asset.currentLiabilities * 0.12
+      ? { label: "Thin", className: "amber" }
+      : { label: "Adequate", className: "green" };
+
+  assetDecisionTitle.textContent = scenario.factorScores.asset_quality >= 75
+    ? "Asset posture: weak"
+    : scenario.factorScores.asset_quality >= 55
+      ? "Asset posture: watch"
+      : "Asset posture: supportable";
+  assetDecisionCopy.textContent = scenario.factorScores.asset_quality >= 75
+    ? "Do not treat receivables and inventory as full liquidity; request aged schedules and evidence."
+    : "Asset support is usable only after receivable timing and inventory quality are validated.";
+
+  assetMetricGrid.innerHTML = [
+    ["Current ratio", `${asset.currentRatio.toFixed(2)}x`, assetStatus.className, "Current assets divided by current liabilities."],
+    ["Quick ratio", `${asset.quickRatio.toFixed(2)}x`, asset.quickRatio < 0.9 ? "red" : asset.quickRatio < 1.1 ? "amber" : "green", "Cash plus haircut receivables against current liabilities."],
+    ["Working capital", formatFullMoney(asset.workingCapital), asset.workingCapital < 0 ? "red" : "green", "Current assets minus current liabilities."],
+    ["Cash conversion cycle", `${asset.stressedCashCycle} days`, cycleStatus.className, "DIO + DSO - DPO plus scenario delay."],
+    ["Working capital turnover", `${asset.workingCapitalTurnover.toFixed(1)}x`, asset.workingCapitalTurnover < 6 ? "amber" : "green", "Annualized sales compared with working capital base."],
+    ["Stressed asset buffer", formatFullMoney(asset.stressedTangibleBuffer), bufferStatus.className, "Forecast cash plus haircut assets minus current liabilities."],
+    ["Cash runway", `${asset.cashRunwayDays} days`, asset.cashRunwayDays < 14 ? "red" : asset.cashRunwayDays < 30 ? "amber" : "green", "Cash coverage against near-term liability burn."]
+  ].map(([label, value, className, body]) => `
+    <article class="asset-metric-card">
+      <span class="status-pill ${className}">${label}</span>
+      <strong>${value}</strong>
+      <p>${body}</p>
+    </article>
+  `).join("");
+
+  assetLogicList.innerHTML = [
+    ["Receivable haircut", "Expected receivables are not counted as cash. The quick-ratio and buffer views haircut receivables before they support credit capacity."],
+    ["Inventory haircut", "Inventory is treated as a slower asset, useful for continuity but weak as immediate liquidity."],
+    ["Current liability pressure", "Payroll, rent, supplier, tax, lease, and short-term obligations define the denominator for the asset test."],
+    ["Bottom-up company measure", "The model measures usable operating assets first, then decides whether any facility size is proportionate."]
+  ].map(([title, body]) => `<div><strong>${title}</strong><span>${body}</span></div>`).join("");
+
+  stressTable.innerHTML = `
+    <div class="stress-row stress-head"><span>Scenario</span><span>Metric</span><span>Decision use</span></div>
+    <div class="stress-row"><span>Base cycle</span><span>${asset.baseCashCycle} days</span><span>Normal operating cash tie-up.</span></div>
+    <div class="stress-row"><span>Delay stress</span><span>+${scenario.delay} days</span><span>Receivables arrive later than expected.</span></div>
+    <div class="stress-row"><span>Stressed cycle</span><span>${asset.stressedCashCycle} days</span><span>${cycleStatus.label} working-capital drag.</span></div>
+    <div class="stress-row"><span>Lowest cash</span><span>${formatMoney(Math.min(...scenario.balances))}</span><span>Used before recommending any facility.</span></div>
+  `;
+
+  researchAnchorList.innerHTML = [
+    ["Journal of Financial Economics lens", "Uses working-capital efficiency and cash-conversion-cycle logic to explain how receivables, inventory, and payables affect liquidity."],
+    ["Financial Review lens", "Adds financial-constraint and liquidity-buffer thinking: cash shortfalls, asset quality, and repayment capacity are tested before growth credit."],
+    ["Banking guardrail", "The result is a staff decision aid, not an approval engine; high-risk assets trigger evidence collection and human review."]
+  ].map(([title, body]) => `<div><strong>${title}</strong><span>${body}</span></div>`).join("");
+}
+
 function renderEvidence(scenario) {
   const account = scenario.account;
+  const asset = scenario.assetMetrics;
   dataSignals.innerHTML = `
     <div><strong>Monthly inflow</strong><span>${formatMoney(account.monthlyInflow)} observed in recent operating account activity.</span></div>
     <div><strong>Invoices at risk</strong><span>${formatMoney(account.invoicesAtRisk)} expected receipts may arrive after fixed-cost week.</span></div>
+    <div><strong>Current asset base</strong><span>${formatFullMoney(asset.currentAssets)} current assets against ${formatFullMoney(asset.currentLiabilities)} current liabilities.</span></div>
+    <div><strong>Cash conversion cycle</strong><span>${asset.stressedCashCycle} stressed days after the receivable-delay scenario.</span></div>
     <div><strong>Scenario stressor</strong><span>${scenario.delay}-day receivable delay applied during demo simulation.</span></div>
   `;
 
   modelLogic.innerHTML = `
-    <div><strong>Liquidity and stress testing · 30%</strong><span>Penalizes forecast weeks below the internal comfort threshold and negative-balance incidents after receivable delays.</span></div>
-    <div><strong>Receivables and fixed costs · 25%</strong><span>Raises risk when debtor concentration, payroll, rent, tax, and supplier timing create non-deferrable pressure.</span></div>
-    <div><strong>Repayment coverage proxy · 15%</strong><span>Compares suggested facility size with normal operating inflows before any DSCR-style credit review.</span></div>
-    <div><strong>Data confidence · 15%</strong><span>Adjusts review friction based on uploaded row count, invoice evidence, category clarity, and stale or missing fields.</span></div>
-    <div><strong>Policy readiness · 15%</strong><span>Blocks customer-facing facility suggestions when affordability, eligibility, or approval authority is incomplete.</span></div>
+    <div><strong>Liquidity stress · 22%</strong><span>Penalizes forecast weeks below the internal comfort threshold and negative-balance incidents after receivable delays.</span></div>
+    <div><strong>Receivables and fixed costs · 26%</strong><span>Raises risk when debtor concentration, payroll, rent, tax, and supplier timing create non-deferrable pressure.</span></div>
+    <div><strong>Asset quality · 13%</strong><span>Measures current ratio, quick ratio, tangible asset coverage, and stressed asset buffer after haircuts.</span></div>
+    <div><strong>Cash conversion cycle · 10%</strong><span>Uses DIO + DSO - DPO, then adds scenario delay to detect working-capital drag.</span></div>
+    <div><strong>Coverage, data, policy · 29%</strong><span>Combines facility-to-inflow coverage, data confidence, balance volatility, and human approval gates.</span></div>
   `;
   renderMarketData();
 }
@@ -672,7 +919,7 @@ function renderSettings() {
 
   governanceList.innerHTML = [
     ["Model purpose", "Early-warning triage for DBS staff. It recommends review actions; it does not approve credit."],
-    ["Scoring approach", "Weighted multi-factor assessment: liquidity buffer, receivables concentration, fixed-cost pressure, volatility, coverage, data confidence, and policy readiness."],
+    ["Scoring approach", "Weighted multi-factor assessment: liquidity buffer, receivables concentration, fixed-cost pressure, volatility, coverage, asset quality, cash conversion cycle, data confidence, and policy readiness."],
     ["Validation plan", "Shadow-mode pilot compares alerts with RM judgment, inspector review, false positives, and customer outcomes."],
     ["Human control", "High-risk or low-evidence cases are blocked from credit submission until RM and credit-policy checks pass."],
     ["Audit trail", "A production version should log uploaded data version, factor scores, overrides, and final RM action."]
@@ -872,6 +1119,7 @@ function updateDashboard() {
   renderBars(scenario.balances);
   renderOverview(scenario);
   renderDrivers(scenario.account, scenario.risk);
+  renderAssetLens(scenario);
   renderEvidence(scenario);
   renderPilotPlan(scenario);
   renderActions(scenario);

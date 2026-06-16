@@ -35,6 +35,10 @@
             <i data-lucide="activity"></i>
             <span>Risk Drivers</span>
           </button>
+          <button class="nav-item" type="button" data-section="assets">
+            <i data-lucide="landmark"></i>
+            <span>Asset Lens</span>
+          </button>
           <button class="nav-item" type="button" data-section="actions">
             <i data-lucide="clipboard-check"></i>
             <span>Action Plan</span>
@@ -373,6 +377,37 @@
           <div class="methodology-panel">
             <p class="label">Model method</p>
             <div id="methodologyList" class="methodology-grid"></div>
+          </div>
+        </section>
+
+        <section id="assets" class="panel" aria-labelledby="assetsTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Research upgrade</p>
+              <h3 id="assetsTitle">Company asset-quality and working-capital lens</h3>
+              <p class="section-copy">This page extends the prototype beyond a cash-gap dashboard. It measures the operating assets underneath the SME: cash, receivables, inventory, payables timing, asset productivity, and stressed liquidity.</p>
+            </div>
+            <div class="guided-step">
+              <strong id="assetDecisionTitle">Asset posture</strong>
+              <span id="assetDecisionCopy">Recomputed after every receivable-delay scenario.</span>
+            </div>
+          </div>
+
+          <div class="asset-lens-grid" id="assetMetricGrid"></div>
+
+          <div class="asset-layout">
+            <article class="asset-card">
+              <p class="label">Asset measurement logic</p>
+              <div id="assetLogicList" class="evidence-list"></div>
+            </article>
+            <article class="asset-card">
+              <p class="label">Stress test table</p>
+              <div id="stressTable" class="stress-table"></div>
+            </article>
+            <article class="asset-card">
+              <p class="label">Research anchors</p>
+              <div id="researchAnchorList" class="evidence-list"></div>
+            </article>
           </div>
         </section>
 

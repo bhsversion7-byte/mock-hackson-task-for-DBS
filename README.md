@@ -48,7 +48,19 @@ Supported `type` values: `inflow`, `outflow`.
 
 Useful `status` values: `expected`, `received`, `due`, `paid`.
 
-The prototype applies the receivable-delay slider to expected inflows, then evaluates projected cash gap, risk drivers, confidence, and a guardrailed action plan.
+The prototype applies the receivable-delay slider to expected inflows, then evaluates projected cash gap, risk drivers, asset quality, cash conversion cycle, confidence, and a guardrailed action plan.
+
+## Research Upgrade
+
+The latest version adds an **Asset Lens** page and a revised risk model inspired by working-capital and liquidity-risk research:
+
+- current ratio and quick ratio
+- working capital and stressed tangible asset buffer
+- cash conversion cycle: DIO + DSO - DPO, plus receivable-delay stress
+- working-capital turnover and cash runway
+- asset-quality haircuts for receivables and inventory before they are counted as liquidity
+
+This makes the demo less dependent on a simple cash-gap score and closer to a bottom-up company asset review.
 
 ## Market Data
 
